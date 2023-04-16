@@ -93,13 +93,13 @@ private:
         cout << root->data << " ";
     }
 
-    void printTree(Node *root, int l) {
+    void printTree(Node *root, int x) {
         int i;
         if (root != nullptr) {
-            printTree(((*root).right), l + 1);
-            for (i = 1; i <= l; i++) cout << " ";
+            printTree(((*root).right), x + 1);
+            for (i = 1; i <= x; i++) cout << " ";
             cout << (*root).data << endl;
-            printTree(((*root).left), l + 1);
+            printTree(((*root).left), x + 1);
         }
     }
 
@@ -121,13 +121,13 @@ public:
     void print() {
         printTree(root, 0);
         cout << endl;
-        cout << "Інфіксний обхід:" << endl; //ліве піддерево,
+        cout << "Інфіксний обхід:" << endl;
         printInOrder(root);
         cout << endl;
-        cout << "Префіксний обхід:" << endl; //корінь, ліве
+        cout << "Префіксний обхід:" << endl;
         printPreOrder(root);
         cout << endl;
-        cout << "Постфіксний обхід:" << endl; //ліве піддерево,
+        cout << "Постфіксний обхід:" << endl;
         printPostOrder(root);
         cout << endl;
     }
@@ -164,14 +164,18 @@ public:
     }
 
 
-    int getDepth(Node* root) {
-        if (root == nullptr) {
-            return -1;
+    int depth(Node* node) {
+        if (node == nullptr) {
+            return 0;
+        } else {
+            int left_depth = depth(node->left);
+            int right_depth = depth(node->right);
+            return 1 + std::max(left_depth, right_depth);
         }
+    }
 
-        int leftDepth = getDepth(root->left);
-        int rightDepth = getDepth(root->right);
-        return max(leftDepth, rightDepth) + 1;
+    int depth() {
+        return depth(root);
     }
 };
 int input() {
@@ -180,7 +184,7 @@ int input() {
         if (!(cin >> N) || (cin.peek() != '\n')) {
             cin.clear();
             while (cin.get() != '\n');
-            cout << "Помилка! Введіть повторно!" << endl;
+            cout << "Try again!" << endl;
             continue;
         }
         return N;
@@ -192,20 +196,20 @@ int main() {
     int data;
     BinarySearchTree tree;
     while (true) {
-        cout << "1 - Додати елементи\n"
-                "2 - Вилучити елементи\n"
-                "3 - Вивід дерева\n"
-                "4 - Пошук по дереву\n"
-                "5 - Глибина дерева\n";
+        cout << "1 - Add elements\n"
+                "2 - Remove elements\n"
+                "3 - Print  tree\n"
+                "4 - Search by tree\n"
+                "5 - Depth of the tree\n";
         choice = input();
         switch (choice) {
             default:
-                cout << "Задачі не існує" << endl;
+                cout << "The task doesn't exist" << endl;
                 break;
             case 0:
                 exit(0);
             case 1:
-                cout << "Вводьте значення:" << endl;
+                cout << "Enter the value:" << endl;
                 while (true){
                     data = input();
                     if (data == 0) break;
@@ -213,16 +217,16 @@ int main() {
                 }
                 break;
             case 2:
-                cout << "Значення для видалення:" << endl;
+                cout << "What number to delete:" << endl;
                 data = input();
                 tree.remove(data);
                 break;
             case 3:
-                cout << "print" << endl;
+                cout << " output " << endl;
                 tree.print();
                 break;
             case 4:
-                cout << "Введіть значення для пошуку:";
+                cout << "Enter a value to search for:";
                 data = input();
                 tree.distanceTo(data);
                 break;
