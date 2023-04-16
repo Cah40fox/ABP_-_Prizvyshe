@@ -221,7 +221,7 @@ int main() {
                 tree.remove(data);
                 break;
             case 3:
-                cout << " output " << endl;
+                cout << "Output" << endl;
                 tree.print();
                 break;
             case 4:
@@ -230,6 +230,7 @@ int main() {
                 tree.range(data);
                 break;
             case 5:
+                cout << "Here is the depth of the tree:" << endl;
                 cout << tree.depth() << endl;
                 break;
 
