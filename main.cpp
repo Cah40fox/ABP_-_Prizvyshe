@@ -163,12 +163,12 @@ public:
     }
 
 
-    int depth(Node* node) {
-        if (node == nullptr) {
-            return 0;
+    int depth(Node* origin) {
+        if (origin == nullptr) {
+            return -1;
         }
-        int left_depth = depth(node->left);
-        int right_depth = depth(node->right);
+        int left_depth = depth(origin->left);
+        int right_depth = depth(origin->right);
         return 1 + (left_depth > right_depth ? left_depth : right_depth);
     }
 
