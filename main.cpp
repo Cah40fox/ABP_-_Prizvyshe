@@ -175,6 +175,7 @@ public:
     int depth() {
         return depth(origin);
     }
+
 };
 int input() {
     int I;
@@ -229,11 +230,7 @@ int main() {
                 tree.range(data);
                 break;
             case 5:
-                if (tree.isEmpty()) {
-                    cout << "Tree is empty" << endl;
-                } else {
-                    cout << "Tree depth: " << tree.depth(origin) << endl;
-                }
+                cout << tree.depth() << endl;
                 break;
 
         }
