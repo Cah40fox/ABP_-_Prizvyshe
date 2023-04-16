@@ -163,20 +163,17 @@ public:
     }
 
 
-    int depth_helper(Node* node) {
+    int depth(Node* node) {
         if (node == nullptr) {
             return 0;
         }
-        int left_depth = depth_helper(node->left);
-        int right_depth = depth_helper(node->right);
-        return (left_depth > right_depth ? left_depth : right_depth) + 1;
+        int left_depth = depth(node->left);
+        int right_depth = depth(node->right);
+        return 1 + (left_depth > right_depth ? left_depth : right_depth);
     }
 
     int depth() {
-        if (origin == nullptr) {
-            return 0;
-        }
-        return depth_helper(origin);
+        return depth(origin);
     }
 };
 int input() {
@@ -232,8 +229,13 @@ int main() {
                 tree.range(data);
                 break;
             case 5:
-                int tree_depth = depth(tree.get_origin());
-                std::cout << "Depth of the tree is: " << tree_depth << std::endl;
+                if (tree.isEmpty()) {
+                    cout << "Tree is empty" << endl;
+                } else {
+                    cout << "Tree depth: " << tree.depth(origin) << endl;
+                }
+                break;
+
         }
     }
 }
