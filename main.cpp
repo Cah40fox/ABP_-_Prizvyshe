@@ -11,22 +11,50 @@ private:
         Node* left;
         Node* right;
     };
-    Node *root;
+    Node *origin;
 
-    Node *insert(Node *root, int data) {
-        if (root == nullptr) {
+    Node *paste(Node *origin, int data) {
+        if (origin == nullptr) {
             Node *newNode = new Node();
             newNode->data = data;
             newNode->left = nullptr;
             newNode->right = nullptr;
             return newNode;
         }
-        if (data < root->data) {
-            root->left = insert(root->left, data);
-        } else if (data > root->data) {
-            root->right = insert(root->right, data);
+        if (data < origin->data) {
+            origin->left = paste(origin->left, data);
+        } else if (data > origin->data) {
+            origin->right = paste(origin->right, data);
         }
-        return root;
+        return origin;
+    }
+    Node *remove(Node *origin, int data) {
+        if (origin == nullptr) {
+            return origin;
+        }
+        if (data < origin->data) {
+            origin->left = remove(origin->left, data);
+        } else if (data > origin->data) {
+            origin->right = remove(origin->right, data);
+        } else {
+            if (origin->left == nullptr && origin->right == nullptr) {
+                delete origin;
+                origin = nullptr;
+            } else if (origin->left == nullptr) {
+                Node *prov = origin ;
+                origin = origin->right;
+                delete prov;
+            } else if (origin->right == nullptr) {
+                Node *prov = origin;
+                origin = origin->left;
+                delete prov;
+            } else {
+                Node *prov = minValueNode(origin->right);
+                origin->data = prov->data;
+                origin->right = remove(origin->right, prov->data);
+            }
+        }
+        return origin;
     }
 
     Node *minValueNode(Node *node) {
@@ -37,104 +65,75 @@ private:
         return current;
     }
 
-    Node *remove(Node *root, int data) {
-        if (root == nullptr) {
-            return root;
-        }
-        if (data < root->data) {
-            root->left = remove(root->left, data);
-        } else if (data > root->data) {
-            root->right = remove(root->right, data);
-        } else {
-            if (root->left == nullptr && root->right == nullptr) {
-                delete root;
-                root = nullptr;
-            } else if (root->left == nullptr) {
-                Node *temp = root;
-                root = root->right;
-                delete temp;
-            } else if (root->right == nullptr) {
-                Node *temp = root;
-                root = root->left;
-                delete temp;
-            } else {
-                Node *temp = minValueNode(root->right);
-                root->data = temp->data;
-                root->right = remove(root->right, temp->data);
-            }
-        }
-        return root;
-    }
-
-    void printInOrder(Node *root) {
-        if (root == nullptr) {
+    void printInOrder(Node *origin) {
+        if (origin == nullptr) {
             return;
         }
-        printInOrder(root->left);
-        cout << root->data << " ";
-        printInOrder(root->right);
+        printInOrder(origin->left);
+        cout << origin->data << " ";
+        printInOrder(origin->right);
     }
 
-    void printPreOrder(Node *root) {
-        if (root == nullptr) {
+    void printPreOrder(Node *origin) {
+        if (origin == nullptr) {
             return;
         }
-        cout << root->data << " ";
-        printPreOrder(root->left);
-        printPreOrder(root->right);
+        cout << origin->data << " ";
+        printPreOrder(origin->left);
+        printPreOrder(origin->right);
     }
 
-    void printPostOrder(Node *root) {
-        if (root == nullptr) {
+    void printPostOrder(Node *origin) {
+        if (origin == nullptr) {
             return;
         }
-        printPostOrder(root->left);
-        printPostOrder(root->right);
-        cout << root->data << " ";
+        printPostOrder(origin->left);
+        printPostOrder(origin->right);
+        cout << origin->data << " ";
     }
 
-    void printTree(Node *root, int x) {
+    void outputTree(Node *origin, int x) {
         int i;
-        if (root != nullptr) {
-            printTree(((*root).right), x + 1);
+        if (origin != nullptr) {
+            outputTree(((*origin).right), x + 1);
             for (i = 1; i <= x; i++) cout << " ";
-            cout << (*root).data << endl;
-            printTree(((*root).left), x + 1);
+            cout << (*origin).data << endl;
+            outputTree(((*origin).left), x + 1);
         }
     }
 
 public:
     BinarySearchTree() {
-        root = nullptr;
+        origin = nullptr;
     }
 
-    void insert(int data) {
-        root = insert(root, data);
+    void paste(int data) {
+        origin = paste(origin, data);
     }
 
     void remove(int data) {
-        root = remove(root, data);
+        origin = remove(origin, data);
     }
 
 
 
     void print() {
-        printTree(root, 0);
+        outputTree(origin, 0);
         cout << endl;
-        cout << "Інфіксний обхід:" << endl;
-        printInOrder(root);
+        cout << "Infix traversal:" << endl;
+        printInOrder(origin);
         cout << endl;
-        cout << "Префіксний обхід:" << endl;
-        printPreOrder(root);
+        cout << "Prefix traversal:" << endl;
+        printPreOrder(origin);
         cout << endl;
-        cout << "Постфіксний обхід:" << endl;
-        printPostOrder(root);
+        cout << "Post-fix traversal:" << endl;
+        printPostOrder(origin);
         cout << endl;
     }
 
-    int getNearestVertex(Node *root, int target) {
+    int getNearestVertex(Node *origin, int target) {
         queue<pair<Node *, int>> q;
-        q.push(make_pair(root, 0));
+        q.push(make_pair(origin, 0));
         while (!q.empty()) {
             Node *current = q.front().first;
             int currentDepth = q.front().second;
@@ -152,42 +151,44 @@ public:
         return -1;
     }
 
-    void distanceTo(int data) {
-        int distance = getNearestVertex(root, data);
+    void range(int data) {
+        int distance = getNearestVertex(origin, data);
         if (distance == -1) {
-            cout << "Значення " << data << " не знайдено в дереві." <<
+            cout << "Value " << data << " did'not find in tree." <<
                  endl;
         } else {
-            cout << "Найменша довжина шляху до " << data << " це " <<
+            cout << "The shortest path length to " << data << " it's " <<
                  distance << "." << endl;
         }
     }
 
 
-    int depth(Node* node) {
+    int depth_helper(Node* node) {
         if (node == nullptr) {
             return 0;
-        } else {
-            int left_depth = depth(node->left);
-            int right_depth = depth(node->right);
-            return 1 + std::max(left_depth, right_depth);
         }
+        int left_depth = depth_helper(node->left);
+        int right_depth = depth_helper(node->right);
+        return (left_depth > right_depth ? left_depth : right_depth) + 1;
     }
 
     int depth() {
-        return depth(root);
+        if (origin == nullptr) {
+            return 0;
+        }
+        return depth_helper(origin);
     }
 };
 int input() {
-    int N;
+    int I;
     while (true) {
-        if (!(cin >> N) || (cin.peek() != '\n')) {
+        if (!(cin >> I) || (cin.peek() != '\n')) {
             cin.clear();
             while (cin.get() != '\n');
             cout << "Try again!" << endl;
             continue;
         }
-        return N;
+        return I;
     }
 }
 
@@ -213,7 +214,7 @@ int main() {
                 while (true){
                     data = input();
                     if (data == 0) break;
-                    tree.insert(data);
+                    tree.paste(data);
                 }
                 break;
             case 2:
@@ -228,10 +229,11 @@ int main() {
             case 4:
                 cout << "Enter a value to search for:";
                 data = input();
-                tree.distanceTo(data);
+                tree.range(data);
                 break;
             case 5:
-                tree.depth();
+                int tree_depth = depth(tree.get_origin());
+                std::cout << "Depth of the tree is: " << tree_depth << std::endl;
         }
     }
 }
