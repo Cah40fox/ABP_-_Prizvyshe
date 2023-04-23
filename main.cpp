@@ -1,131 +1,108 @@
 #include <iostream>
-#include <vector>
-#include <iomanip>
+#include <climits>
 using namespace std;
 
-  a b c d e f
-a 1 0 1 1 0 0
-b 0 1 1 1 0 0
-c 1 1 1 0 1 1
-d 1 1 0 1 1 1
-e 0 0 1 1 1 0
-f 0 0 1 1 0 1
-void dijkstra(int graph[V][V], int src) {
-    int dist[V];
-    bool sptSet[V];
-    for (int i = 0; i < V; i++)
-        dist[i] = INT_MAX, sptSet[i] = false;
-    dist[src] = 0;
-    for (int count = 0; count < V - 1; count++) {
-        int u = minDistance(dist, sptSet);
-        sptSet[u] = true;
-        for (int v = 0; v < V; v++)
-            if (!sptSet[v] && graph[u][v] && dist[u] != INT_MAX &&
-                dist[u] + graph[u][v] < dist[v])
-                dist[v] = dist[u] + graph[u][v];
-    }
-    printSolution(dist);
-}
+// Задаємо кількість вершин графа
 #define V 6
-int minDistance(const int dist[], const bool sptSet[]) {
-    int min = INT_MAX, min_index;
-    for (int v = 0; v < V; v++)
-        if (!sptSet[v] && dist[v] <= min)
-            min = dist[v], min_index = v;
-    return min_index;
-}
-void printSolution(int dist[]) {
-    cout << "Vertex \t Distance from Source\n";
-    for (int i = 0; i < V; i++)
-        cout << abc[i] << "\t\t" << dist[i] << endl;
-}
-char abc[V] = {'a', 'b', 'c', 'd', 'e', 'f'};
-int lab_9_1() {
-    int k = -1;
-    int graph[V][V] = {
-            {1, 0, 1, 1, 0, 0},
-            {0, 1, 1, 1, 0, 0},
-            {1, 1, 1, 0, 1, 1},
-            {1, 1, 0, 1, 1, 1},
-            {0, 0, 1, 1, 1, 0},
-            {0, 0, 1, 1, 0, 1}
-    };
-    while (k == -1) {
-        cout << "Choose vertex: ";
-        char choice;
-        cin >> choice;
-        for (int i = 0; i < 6; i++) {
-            if (choice == abc[i]) {
-                k = i;
-                break;
-            }
-        }
-        if (k == -1) {
-            cout << "Only a,b,c,d,e,f!" << endl;
-        }
-    }
-    dijkstra(graph, k);
-    return 0;
-}
-void floydWarshall(int graph[V][V]) {
-    int dist[V][V];
-    for (int i = 0; i < V; i++)
-        for (int j = 0; j < V; j++)
-            dist[i][j] = graph[i][j];
-    for (int k = 0; k < V; k++)
-        for (int i = 0; i < V; i++)
-            for (int j = 0; j < V; j++)
-                if (dist[i][k] != INT_MAX && dist[k][j] != INT_MAX
-                    && dist[i][k] + dist[k][j] < dist[i][j])
-                    dist[i][j] = dist[i][k] + dist[k][j];
-    printSolution(dist);
-}
-void printSolution(int dist[][V]) {
-    cout << "Shortest distances between every pair of
-    vertices:\n";
-    cout << "\t";
-    for (char i : abc) cout << i << "\t";
-    cout << endl;
+
+// Функція для виводу матриці дистанцій
+void printSolution(int dist[][V])
+{
+    cout << "Shortest distances between every pair of vertices:\n";
     for (int i = 0; i < V; i++) {
-        cout << abc[i] << "\t";
         for (int j = 0; j < V; j++) {
-            if (dist[i][j] == INT_MAX)
-                cout << "INF" << "\t";
-            else
+            if (dist[i][j] == INT_MAX) {
+                cout << "INF"
+                     << "\t";
+            } else {
                 cout << dist[i][j] << "\t";
+            }
         }
         cout << endl;
     }
 }
-int lab_9_2() {
-    int graph[V][V] = {
-            {1 , INF, 1 , 1 , INF, INF},
-            {INF, 1 , 1 , 1 , INF, INF},
-            {1 , 1 , 1 , INF, 1 , 1 },
-            {1 , 1 , INF, 1 , 1 , 1 },
-            {INF, INF, 1 , 1 , 1 , INF},
-            {INF, INF, 1 , 1 , INF, 1 }
-    };
-    floydWarshall(graph);
-    return 0;
+
+// Функція для знаходження найкоротших відстаней між кожною парою вершин графа
+void floydWarshall(int graph[][V])
+{
+    int dist[V][V], i, j, k;
+
+    // Ініціалізуємо відстані як ваги ребер графа
+    for (i = 0; i < V; i++)
+        for (j = 0; j < V; j++)
+            dist[i][j] = graph[i][j];
+
+    // Застосовуємо алгоритм Флойда-Уоршелла для знаходження найкоротших відстаней між кожною парою вершин графа
+    for (k = 0; k < V; k++) {
+        for (i = 0; i < V; i++) {
+            for (j = 0; j < V; j++) {
+                if (dist[i][k] == INT_MAX || dist[k][j] == INT_MAX)
+                    continue;
+                else if (dist[i][j] > dist[i][k] + dist[k][j])
+                    dist[i][j] = dist[i][k] + dist[k][j];
+            }
+        }
+    }
+    // Виводимо знайдені найкоротші відстані
+    printSolution(dist);
 }
-#define INF INT_MAX
+// Функція для знаходження найкоротших шляхів до всіх вершин від заданої вершини
+void dijkstra(int graph[V][V], int src)
+{
+    int dist[V]; // масив для зберігання найкоротших відстаней
+    bool sptSet[V]; // масив для зберігання флагів відвіданих вершин
+
+    // Ініціалізуємо відстані як нескінченні, а флаги - як невідвідані
+    for (int i = 0; i < V; i++) {
+        dist[i] = INT_MAX;
+        sptSet[i] = false;
+    }
+
+    // Відстань від заданої вершини до неї самої - завжди 0
+    dist[src] = 0;
+
+    // Знаходимо найкоротші шляхи до всіх вершин від заданої вершини
+    for (int count = 0; count < V - 1; count++) {
+        // Знаходимо вершину з найменшою відстанню, яка ще не була відвідана
+        int u, minDist = INT_MAX;
+        for (int v = 0; v < V; v++)
+            if (!sptSet[v] && dist[v] <= minDist)
+                minDist = dist[v], u = v;
+
+        // Позначаємо знайдену вершину як відвідану
+        sptSet[u] = true;
+
+        // Оновлюємо відстані до всіх сусідніх вершин, що ще не відвідали
+        for (int v = 0; v < V; v++)
+            if (!sptSet[v] && graph[u][v] && dist[u] != INT_MAX && dist[u] + graph[u][v] < dist[v])
+                dist[v] = dist[u] + graph[u][v];
+    }
+
+    // Виводимо знайдені найкоротші шляхи
+    cout << "Shortest distances from vertex " << src << ":\n";
+    for (int i = 0; i < V; i++) {
+        if (dist[i] == INT_MAX)
+            cout << i << ": INF" << endl;
+        else
+            cout << i << ": " << dist[i] << endl;
+    }
+}
+
 int main() {
-    char choice;
-    while (true) {
-        cout << "Dijkstra (1) or floydWarshall (2)?" << endl;
-        cin >> choice;
-        if (choice == '1' || choice == '2') break;
-        else cout << "Only 1 or 2" << endl;
-    }
-    switch (choice){
-        default:
-            break;
-        case '1':
-            lab_9_1();
-            break;
-        case '2':
-            lab_9_2();
-            break;
-    }
+    // Граф у вигляді матриці суміжності
+    int graph[V][V] = {
+            {1,       INT_MAX,       1, 1, INT_MAX, INT_MAX},
+            {INT_MAX,       1,       1, 1, INT_MAX, INT_MAX},
+            {1, 1,       1,       INT_MAX, 1, 1},
+            {1,       1, INT_MAX,       1, 1,       1},
+            {INT_MAX, INT_MAX, 1, 1, 1,       INT_MAX},
+            {INT_MAX, INT_MAX,       1,       1, INT_MAX,       1}
+    };
+
+    floydWarshall(graph);
+    cout << endl;
+
+    dijkstra(graph, 0);
+
+    return 0;
 }
