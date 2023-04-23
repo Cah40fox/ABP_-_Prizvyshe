@@ -47,7 +47,8 @@ void floydWarshall(int graph[][V])
     printSolution(dist);
 }
 // Функція для знаходження найкоротших шляхів до всіх вершин від заданої вершини
-void dijkstra(int** graph, int size, int start_vertex, int* distances) {
+void dijkstra(int graph[][6], int size, int start_vertex, int* distances) {
+
     bool* visited = new bool[size];
     for (int i = 0; i < size; i++) {
         distances[i] = INT_MIN; // Ініціалізація найкоротших відстаней
@@ -96,7 +97,14 @@ int main() {
     floydWarshall(graph);
     cout << endl;
 
-    dijkstra(graph, 6, 6, 1 );
+    int graph[6][6] = {{0, 5, 1, 0, 0, 0},
+                       {5, 0, 2, 1, 0, 0},
+                       {1, 2, 0, 1, 1, 0},
+                       {0, 1, 1, 0, 2, 1},
+                       {0, 0, 1, 2, 0, 0},
+                       {0, 0, 0, 1, 0, 0}};
+    int distances[6];
+    dijkstra(graph, 6, 0, distances);
 
     return 0;
 }
