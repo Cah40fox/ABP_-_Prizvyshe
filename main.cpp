@@ -1,239 +1,131 @@
 #include <iostream>
-#include <queue>
-
+#include <vector>
+#include <iomanip>
 using namespace std;
 
-
-class BinarySearchTree {
-private:
-    struct Node {
-        int data;
-        Node* left;
-        Node* right;
+  a b c d e f
+a 1 0 1 1 0 0
+b 0 1 1 1 0 0
+c 1 1 1 0 1 1
+d 1 1 0 1 1 1
+e 0 0 1 1 1 0
+f 0 0 1 1 0 1
+void dijkstra(int graph[V][V], int src) {
+    int dist[V];
+    bool sptSet[V];
+    for (int i = 0; i < V; i++)
+        dist[i] = INT_MAX, sptSet[i] = false;
+    dist[src] = 0;
+    for (int count = 0; count < V - 1; count++) {
+        int u = minDistance(dist, sptSet);
+        sptSet[u] = true;
+        for (int v = 0; v < V; v++)
+            if (!sptSet[v] && graph[u][v] && dist[u] != INT_MAX &&
+                dist[u] + graph[u][v] < dist[v])
+                dist[v] = dist[u] + graph[u][v];
+    }
+    printSolution(dist);
+}
+#define V 6
+int minDistance(const int dist[], const bool sptSet[]) {
+    int min = INT_MAX, min_index;
+    for (int v = 0; v < V; v++)
+        if (!sptSet[v] && dist[v] <= min)
+            min = dist[v], min_index = v;
+    return min_index;
+}
+void printSolution(int dist[]) {
+    cout << "Vertex \t Distance from Source\n";
+    for (int i = 0; i < V; i++)
+        cout << abc[i] << "\t\t" << dist[i] << endl;
+}
+char abc[V] = {'a', 'b', 'c', 'd', 'e', 'f'};
+int lab_9_1() {
+    int k = -1;
+    int graph[V][V] = {
+            {1, 0, 1, 1, 0, 0},
+            {0, 1, 1, 1, 0, 0},
+            {1, 1, 1, 0, 1, 1},
+            {1, 1, 0, 1, 1, 1},
+            {0, 0, 1, 1, 1, 0},
+            {0, 0, 1, 1, 0, 1}
     };
-    Node *origin;
-
-    Node *paste(Node *origin, int data) {
-        if (origin == nullptr) {
-            Node *newNode = new Node();
-            newNode->data = data;
-            newNode->left = nullptr;
-            newNode->right = nullptr;
-            return newNode;
-        }
-        if (data < origin->data) {
-            origin->left = paste(origin->left, data);
-        } else if (data > origin->data) {
-            origin->right = paste(origin->right, data);
-        }
-        return origin;
-    }
-    Node *remove(Node *origin, int data) {
-        if (origin == nullptr) {
-            return origin;
-        }
-        if (data < origin->data) {
-            origin->left = remove(origin->left, data);
-        } else if (data > origin->data) {
-            origin->right = remove(origin->right, data);
-        } else {
-            if (origin->left == nullptr && origin->right == nullptr) {
-                delete origin;
-                origin = nullptr;
-            } else if (origin->left == nullptr) {
-                Node *prov = origin ;
-                origin = origin->right;
-                delete prov;
-            } else if (origin->right == nullptr) {
-                Node *prov = origin;
-                origin = origin->left;
-                delete prov;
-            } else {
-                Node *prov = minValueNode(origin->right);
-                origin->data = prov->data;
-                origin->right = remove(origin->right, prov->data);
+    while (k == -1) {
+        cout << "Choose vertex: ";
+        char choice;
+        cin >> choice;
+        for (int i = 0; i < 6; i++) {
+            if (choice == abc[i]) {
+                k = i;
+                break;
             }
         }
-        return origin;
-    }
-
-    Node *minValueNode(Node *node) {
-        Node *current = node;
-        while (current && current->left != nullptr) {
-            current = current->left;
-        }
-        return current;
-    }
-
-    void printInOrder(Node *origin) {
-        if (origin == nullptr) {
-            return;
-        }
-        printInOrder(origin->left);
-        cout << origin->data << " ";
-        printInOrder(origin->right);
-    }
-
-    void printPreOrder(Node *origin) {
-        if (origin == nullptr) {
-            return;
-        }
-        cout << origin->data << " ";
-        printPreOrder(origin->left);
-        printPreOrder(origin->right);
-    }
-
-    void printPostOrder(Node *origin) {
-        if (origin == nullptr) {
-            return;
-        }
-        printPostOrder(origin->left);
-        printPostOrder(origin->right);
-        cout << origin->data << " ";
-    }
-
-    void outputTree(Node *origin, int x) {
-        int i;
-        if (origin != nullptr) {
-            outputTree(((*origin).right), x + 1);
-            for (i = 1; i <= x; i++) cout << " ";
-            cout << (*origin).data << endl;
-            outputTree(((*origin).left), x + 1);
+        if (k == -1) {
+            cout << "Only a,b,c,d,e,f!" << endl;
         }
     }
-
-public:
-    BinarySearchTree() {
-        origin = nullptr;
-    }
-
-    void paste(int data) {
-        origin = paste(origin, data);
-    }
-
-    void remove(int data) {
-        origin = remove(origin, data);
-    }
-
-
-
-    void print() {
-        outputTree(origin, 0);
+    dijkstra(graph, k);
+    return 0;
+}
+void floydWarshall(int graph[V][V]) {
+    int dist[V][V];
+    for (int i = 0; i < V; i++)
+        for (int j = 0; j < V; j++)
+            dist[i][j] = graph[i][j];
+    for (int k = 0; k < V; k++)
+        for (int i = 0; i < V; i++)
+            for (int j = 0; j < V; j++)
+                if (dist[i][k] != INT_MAX && dist[k][j] != INT_MAX
+                    && dist[i][k] + dist[k][j] < dist[i][j])
+                    dist[i][j] = dist[i][k] + dist[k][j];
+    printSolution(dist);
+}
+void printSolution(int dist[][V]) {
+    cout << "Shortest distances between every pair of
+    vertices:\n";
+    cout << "\t";
+    for (char i : abc) cout << i << "\t";
+    cout << endl;
+    for (int i = 0; i < V; i++) {
+        cout << abc[i] << "\t";
+        for (int j = 0; j < V; j++) {
+            if (dist[i][j] == INT_MAX)
+                cout << "INF" << "\t";
+            else
+                cout << dist[i][j] << "\t";
+        }
         cout << endl;
-        cout << "Infix traversal:" << endl;
-        printInOrder(origin);
-        cout << endl;
-        cout << "Prefix traversal:" << endl;
-        printPreOrder(origin);
-        cout << endl;
-        cout << "Post-fix traversal:" << endl;
-        printPostOrder(origin);
-        cout << endl;
-    }
-
-    int getNearestVertex(Node *origin, int target) {
-        queue<pair<Node *, int>> q;
-        q.push(make_pair(origin, 0));
-        while (!q.empty()) {
-            Node *current = q.front().first;
-            int currentDepth = q.front().second;
-            q.pop();
-            if (current->data == target) {
-                return currentDepth;
-            }
-            if (current->left != nullptr) {
-                q.push(make_pair(current->left, currentDepth + 1));
-            }
-            if (current->right != nullptr) {
-                q.push(make_pair(current->right, currentDepth + 1));
-            }
-        }
-        return -1;
-    }
-
-    void range(int data) {
-        int distance = getNearestVertex(origin, data);
-        if (distance == -1) {
-            cout << "Value " << data << " did'not find in tree." <<
-                 endl;
-        } else {
-            cout << "The shortest path length to " << data << " it's " <<
-                 distance << "." << endl;
-        }
-    }
-
-
-    int depth(Node* origin) {
-        if (origin == nullptr) {
-            return -1;
-        }
-        int left_depth = depth(origin->left);
-        int right_depth = depth(origin->right);
-        return 1 + (left_depth > right_depth ? left_depth : right_depth);
-    }
-
-    int depth() {
-        return depth(origin);
-    }
-
-};
-int input() {
-    int I;
-    while (true) {
-        if (!(cin >> I) || (cin.peek() != '\n')) {
-            cin.clear();
-            while (cin.get() != '\n');
-            cout << "Try again!" << endl;
-            continue;
-        }
-        return I;
     }
 }
-
+int lab_9_2() {
+    int graph[V][V] = {
+            {1 , INF, 1 , 1 , INF, INF},
+            {INF, 1 , 1 , 1 , INF, INF},
+            {1 , 1 , 1 , INF, 1 , 1 },
+            {1 , 1 , INF, 1 , 1 , 1 },
+            {INF, INF, 1 , 1 , 1 , INF},
+            {INF, INF, 1 , 1 , INF, 1 }
+    };
+    floydWarshall(graph);
+    return 0;
+}
+#define INF INT_MAX
 int main() {
-    int choice;
-    int data;
-    BinarySearchTree tree;
+    char choice;
     while (true) {
-        cout << "1 - Add elements\n"
-                "2 - Remove elements\n"
-                "3 - Print  tree\n"
-                "4 - Search by tree\n"
-                "5 - Depth of the tree\n";
-        choice = input();
-        switch (choice) {
-            default:
-                cout << "The task doesn't exist" << endl;
-                break;
-            case 0:
-                exit(0);
-            case 1:
-                cout << "Enter the value:" << endl;
-                while (true){
-                    data = input();
-                    if (data == 0) break;
-                    tree.paste(data);
-                }
-                break;
-            case 2:
-                cout << "What number to delete:" << endl;
-                data = input();
-                tree.remove(data);
-                break;
-            case 3:
-                cout << "Output" << endl;
-                tree.print();
-                break;
-            case 4:
-                cout << "Enter a value to search for:";
-                data = input();
-                tree.range(data);
-                break;
-            case 5:
-                cout << "Here is the depth of the tree:" << endl;
-                cout << tree.depth() << endl;
-                break;
-
-        }
+        cout << "Dijkstra (1) or floydWarshall (2)?" << endl;
+        cin >> choice;
+        if (choice == '1' || choice == '2') break;
+        else cout << "Only 1 or 2" << endl;
+    }
+    switch (choice){
+        default:
+            break;
+        case '1':
+            lab_9_1();
+            break;
+        case '2':
+            lab_9_2();
+            break;
     }
 }
