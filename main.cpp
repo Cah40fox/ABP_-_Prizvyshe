@@ -96,7 +96,7 @@ int main() {
     floydWarshall(graph);
     cout << endl;
 
-    dijkstra(graph, 0);
+    dijkstra(graph, 6, 6, 1 );
 
     return 0;
 }
