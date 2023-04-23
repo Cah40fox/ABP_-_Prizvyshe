@@ -47,45 +47,39 @@ void floydWarshall(int graph[][V])
     printSolution(dist);
 }
 // Функція для знаходження найкоротших шляхів до всіх вершин від заданої вершини
-void dijkstra(int graph[V][V], int src)
-{
-    int dist[V]; // масив для зберігання найкоротших відстаней
-    bool sptSet[V]; // масив для зберігання флагів відвіданих вершин
-
-    // Ініціалізуємо відстані як нескінченні, а флаги - як невідвідані
-    for (int i = 0; i < V; i++) {
-        dist[i] = INT_MAX;
-        sptSet[i] = false;
+void dijkstra(int** graph, int size, int start_vertex, int* distances) {
+    bool* visited = new bool[size];
+    for (int i = 0; i < size; i++) {
+        distances[i] = INT_MIN; // Ініціалізація найкоротших відстаней
+        visited[i] = false; // Відвідуваність вершин
     }
 
-    // Відстань від заданої вершини до неї самої - завжди 0
-    dist[src] = 0;
+    distances[start_vertex] = 0; // Нульова відстань для початкової вершини
 
-    // Знаходимо найкоротші шляхи до всіх вершин від заданої вершини
-    for (int count = 0; count < V - 1; count++) {
-        // Знаходимо вершину з найменшою відстанню, яка ще не була відвідана
-        int u, minDist = INT_MAX;
-        for (int v = 0; v < V; v++)
-            if (!sptSet[v] && dist[v] <= minDist)
-                minDist = dist[v], u = v;
+    for (int i = 0; i < size - 1; i++) {
+        // Знаходимо вершину з мінімальною відстанню до поточної вершини
+        int min_vertex = -1;
+        for (int j = 0; j < size; j++) {
+            if (!visited[j] && (min_vertex == -1 || distances[j] > distances[min_vertex])) {
+                min_vertex = j;
+            }
+        }
 
-        // Позначаємо знайдену вершину як відвідану
-        sptSet[u] = true;
+        visited[min_vertex] = true; // Позначаємо вершину як відвідану
 
-        // Оновлюємо відстані до всіх сусідніх вершин, що ще не відвідали
-        for (int v = 0; v < V; v++)
-            if (!sptSet[v] && graph[u][v] && dist[u] != INT_MAX && dist[u] + graph[u][v] < dist[v])
-                dist[v] = dist[u] + graph[u][v];
+        // Оновлюємо найкоротші відстані для сусідніх вершин, які ще не відвідані
+        for (int j = 0; j < size; j++) {
+            int edge_weight = graph[min_vertex][j];
+            if (edge_weight != 0 && !visited[j]) {
+                int distance_through_min_vertex = distances[min_vertex] + edge_weight;
+                if (distance_through_min_vertex > distances[j]) {
+                    distances[j] = distance_through_min_vertex;
+                }
+            }
+        }
     }
 
-    // Виводимо знайдені найкоротші шляхи
-    cout << "Shortest distances from vertex " << src << ":\n";
-    for (int i = 0; i < V; i++) {
-        if (dist[i] == INT_MAX)
-            cout << i << ": INF" << endl;
-        else
-            cout << i << ": " << dist[i] << endl;
-    }
+    delete[] visited;
 }
 
 int main() {
